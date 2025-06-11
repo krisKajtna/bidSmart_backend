@@ -53,4 +53,19 @@ export class AuctionController {
         return this.auctionService.findByOwner(user.userId);
     }
 
+    @Patch('me/auction/:id')
+    @UseGuards(JwtAuthGuard)
+    updateMine(@Param('id') id: string, @Body() dto: UpdateAuctionDto, @Req() req: Request) {
+        const user = req.user as any;
+        return this.auctionService.updateOwnAuction(+id, user.userId, dto);
+    }
+
+    @Delete('me/auction/:id')
+    @UseGuards(JwtAuthGuard)
+    removeMine(@Param('id') id: string, @Req() req: Request) {
+        const user = req.user as any;
+        return this.auctionService.removeOwnAuction(+id, user.userId);
+    }
+
+
 }

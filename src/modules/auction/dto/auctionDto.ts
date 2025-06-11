@@ -7,7 +7,6 @@ import {
     Validate,
 } from 'class-validator';
 
-import { PartialType } from '@nestjs/mapped-types';
 import { IsEndTimeAfterStartTime } from './validators/endTimeAfterStartTime.validator';
 
 export class CreateAuctionDto {
@@ -31,6 +30,32 @@ export class CreateAuctionDto {
     endTime: string;
 }
 
+import { IsOptional } from 'class-validator';
 
-export class UpdateAuctionDto extends PartialType(CreateAuctionDto) { }
+export class UpdateAuctionDto {
+    @IsOptional()
+    @IsString()
+    title?: string;
+
+    @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    startingPrice?: number;
+
+    @IsOptional()
+    @IsDateString()
+    startTime?: string;
+
+    @IsOptional()
+    @IsDateString()
+    endTime?: string;
+
+    @IsOptional()
+    @IsString()
+    imageUrl?: string;
+}
 

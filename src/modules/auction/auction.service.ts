@@ -45,4 +45,41 @@ export class AuctionService {
         });
     }
 
+    async updateOwnAuction(auctionId: number, userId: number, dto: UpdateAuctionDto) {
+        const auction = await this.auctionRepo.findOne({
+            where: { id: auctionId },
+            relations: ['owner'],
+        });
+
+        if (!auction) {
+            throw new Error('Auction not found');
+        }
+
+        if (Number(auction.owner.id) !== userId) {
+            throw new Error('Forbidden: You are not the owner of this auction');
+        }
+
+        Object.assign(auction, dto);
+        return this.auctionRepo.save(auction);
+    }
+
+    async removeOwnAuction(auctionId: number, userId: number): Promise<{ message: string }> {
+        const auction = await this.auctionRepo.findOne({
+            where: { id: auctionId },
+            relations: ['owner'],
+        });
+
+        if (!auction) {
+            throw new Error('Auction not found');
+        }
+
+        if (Number(auction.owner.id) !== userId) {
+            throw new Error('Forbidden: You are not the owner of this auction');
+        }
+
+        await this.auctionRepo.remove(auction);
+
+        return { message: 'Auction deleted successfully' };
+    }
+
 }
