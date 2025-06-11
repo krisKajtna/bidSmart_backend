@@ -1,17 +1,30 @@
-import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { IsString, IsNotEmpty, IsNumber, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateAuctionDto {
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     title: string;
 
     @IsString()
-    description?: string;
+    @IsNotEmpty()
+    description: string;
 
     @IsNumber()
-    @Min(0)
     startingPrice: number;
+
+    @IsDateString()
+    startTime: string;
+
+    @IsDateString()
+    endTime: string;
+
+    @IsOptional()
+    @IsString()
+    imageUrl?: string;
 }
 
+
+import { PartialType } from '@nestjs/mapped-types';
+
 export class UpdateAuctionDto extends PartialType(CreateAuctionDto) { }
+

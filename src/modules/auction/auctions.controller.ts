@@ -1,39 +1,56 @@
 import {
-    Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request
+    Controller,
+    Get,
+    Post,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    UseGuards,
+    Req,
 } from '@nestjs/common';
-import { AuctionsService } from './auction.service';
+import { AuctionService } from './auction.service';
+
+import { Request } from 'express';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateAuctionDto, UpdateAuctionDto } from './dto/auctionDto';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('auctions')
-export class AuctionsController {
-    constructor(private readonly service: AuctionsService) { }
+export class AuctionController {
+    constructor(private readonly auctionService: AuctionService) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    create(@Body() dto: CreateAuctionDto, @Request() req) {
-        return this.service.create(dto, req.user.id);
+    create(@Body() dto: CreateAuctionDto, @Req() req: Request) {
+        const user = req.user as any; // JWT payload
+        return this.auctionService.create(dto, user.userId);
     }
 
     @Get()
     findAll() {
-        return this.service.findAll();
+        return this.auctionService.findAll();
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.service.findOne(+id);
+        return this.auctionService.findOne(+id);
     }
 
     @Patch(':id')
-    @UseGuards(JwtAuthGuard)
     update(@Param('id') id: string, @Body() dto: UpdateAuctionDto) {
-        return this.service.update(+id, dto);
+        return this.auctionService.update(+id, dto);
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
     remove(@Param('id') id: string) {
-        return this.service.remove(+id);
+        return this.auctionService.remove(+id);
     }
+
+    @Get('/me/auctions')
+    @UseGuards(JwtAuthGuard)
+    findMine(@Req() req: Request) {
+        const user = req.user as any;
+        return this.auctionService.findByOwner(user.userId);
+    }
+
 }
