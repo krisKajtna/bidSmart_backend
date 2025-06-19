@@ -5,8 +5,10 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
+    OneToMany,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Bid } from './bid.entity';
 
 @Entity()
 export class Auction {
@@ -39,4 +41,8 @@ export class Auction {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => Bid, (bid) => bid.auction)
+    bids: Bid[];
+
 }

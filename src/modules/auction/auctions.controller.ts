@@ -14,10 +14,12 @@ import { AuctionService } from './auction.service';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateAuctionDto, UpdateAuctionDto } from './dto/auctionDto';
+import { CreateBidDto } from './dto/createBid.dto';
+import { BidService } from '../bid/bid.service';
 
 @Controller('auctions')
 export class AuctionController {
-    constructor(private readonly auctionService: AuctionService) { }
+    constructor(private readonly auctionService: AuctionService, private readonly bidService: BidService,) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -67,5 +69,15 @@ export class AuctionController {
         return this.auctionService.removeOwnAuction(+id, user.userId);
     }
 
+    @Post(':id/bid')
+    @UseGuards(JwtAuthGuard)
+    placeBid(
+        @Param('id') id: string,
+        @Body() dto: CreateBidDto,
+        @Req() req: Request,
+    ) {
+        const user = req.user as any;
+        return this.bidService.placeBid(+id, user.userId, dto.amount);
+    }
 
 }
