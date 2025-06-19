@@ -77,7 +77,14 @@ export class AuctionController {
         @Req() req: Request,
     ) {
         const user = req.user as any;
-        return this.bidService.placeBid(+id, user.userId, dto.amount);
+        return this.bidService.placeBid(
+            +id,
+            user.userId,
+            dto.amount,
+            dto.isAutoBid,
+            dto.maxAutoBidAmount
+        );
     }
+
 
 }

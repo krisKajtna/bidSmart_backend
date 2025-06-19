@@ -25,4 +25,11 @@ export class Bid {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @Column({ default: false })
+    isAutoBid: boolean;
+
+    @Column({ type: 'float', nullable: true })
+    maxAutoBidAmount?: number;
+
 }
