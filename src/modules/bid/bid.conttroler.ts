@@ -3,27 +3,35 @@ import {
     Controller,
     Post,
     Body,
-    Param,
     UseGuards,
-    Req,
+    Request,
 } from '@nestjs/common';
 import { BidService } from './bid.service';
-import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { Request } from 'express';
-import { CreateBidDto } from '../auction/dto/createBid.dto';
+import { CreateBidDto } from './dto/createBidDto';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('auctions/:id/bid')
+@Controller('bids')
 export class BidController {
     constructor(private readonly bidService: BidService) { }
 
+    @UseGuards(AuthGuard('jwt'))
     @Post()
-    @UseGuards(JwtAuthGuard)
-    async placeBid(
-        @Param('id') auctionId: string,
-        @Body() dto: CreateBidDto,
-        @Req() req: Request,
-    ) {
-        const user = req.user as any;
-        return this.bidService.placeBid(+auctionId, user.userId, dto.amount);
+    async placeBid(@Body() createBidDto: CreateBidDto, @Request() req) {
+        const userId = req.user.id;
+
+        const {
+            auctionId,
+            amount,
+            isAutoBid = false,
+            maxAutoBidAmount,
+        } = createBidDto;
+
+        return this.bidService.placeBid(
+            auctionId,
+            userId,
+            amount,
+            isAutoBid,
+            maxAutoBidAmount,
+        );
     }
 }
