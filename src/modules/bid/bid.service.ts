@@ -5,7 +5,7 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Auction } from '../../entities/auction.entity';
 import { Bid } from '../../entities/bid.entity';
 
@@ -127,5 +127,20 @@ export class BidService {
                 break; // Ena avtomatska ponovitev naenkrat
             }
         }
+    }
+
+    async getBidHistory(auctionId: number, minutes = 60): Promise<Bid[]> {
+        const since = new Date(Date.now() - minutes * 60 * 1000);
+
+        return this.bidRepo.find({
+            where: {
+                auction: { id: auctionId },
+                createdAt: MoreThan(since),
+            },
+            relations: ['bidder'], // da dobimo uporabnika, ki je ponudbo oddal
+            order: {
+                createdAt: 'DESC',
+            },
+        });
     }
 }

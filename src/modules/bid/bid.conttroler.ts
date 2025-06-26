@@ -5,6 +5,10 @@ import {
     Body,
     UseGuards,
     Request,
+    Get,
+    Param,
+    ParseIntPipe,
+    Query,
 } from '@nestjs/common';
 import { BidService } from './bid.service';
 import { CreateBidDto } from './dto/createBidDto';
@@ -33,5 +37,13 @@ export class BidController {
             isAutoBid,
             maxAutoBidAmount,
         );
+    }
+    @Get('history/:auctionId')
+    async getBidHistory(
+        @Param('auctionId', ParseIntPipe) auctionId: number,
+        @Query('minutes') minutes?: string
+    ) {
+        const mins = parseInt(minutes || '60');
+        return this.bidService.getBidHistory(auctionId, mins);
     }
 }
